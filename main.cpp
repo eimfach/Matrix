@@ -63,21 +63,8 @@ std::pair<Matrix, std::chrono::nanoseconds> test_multiplication() {
     const std::chrono::time_point end = std::chrono::high_resolution_clock::now();
     const std::chrono::nanoseconds elapsed = end - start;
 
-    const std::vector<double> row0 = gsl::at(m3.matrix, 0);
-    const std::vector<double> row1 = gsl::at(m3.matrix, 1);
-    const std::vector<double> row2 = gsl::at(m3.matrix, 2);
-
-    assert(approximatelyEqualAbsRel(gsl::at(row0, 0), 33.46, absEps, relEps));
-    assert(approximatelyEqualAbsRel(gsl::at(row0, 1), 34.57, absEps, relEps));
-    assert(approximatelyEqualAbsRel(gsl::at(row0, 2), 33.69, absEps, relEps));
-
-    assert(approximatelyEqualAbsRel(gsl::at(row1, 0), 76.06, absEps, relEps));
-    assert(approximatelyEqualAbsRel(gsl::at(row1, 1), 31.68, absEps, relEps));
-    assert(approximatelyEqualAbsRel(gsl::at(row1, 2), 41.48, absEps, relEps));
-
-    assert(approximatelyEqualAbsRel(gsl::at(row2, 0), 42.24, absEps, relEps));
-    assert(approximatelyEqualAbsRel(gsl::at(row2, 1), 54.28, absEps, relEps));
-    assert(approximatelyEqualAbsRel(gsl::at(row2, 2), 42.82, absEps, relEps));
+    std::vector<double> test{ 33.46, 34.57, 33.69, 76.06, 31.68, 41.48, 42.24, 54.28, 42.82 };
+    for (size_t i{ 0 }; i < test.size();i++) assert(approximatelyEqualAbsRel(gsl::at(test, i), gsl::at(m3.fields, i), absEps, relEps));
 
     return std::pair{ m3, elapsed };
 }
@@ -85,15 +72,15 @@ std::pair<Matrix, std::chrono::nanoseconds> test_multiplication() {
 
 int main()
 {
-    constexpr int repeats{ 10 };
-    std::chrono::nanoseconds total{0};
-    for (int x{ 0 };x < repeats;x++) {
+    constexpr int test_repeats{ 10000 };
+    std::chrono::nanoseconds total_time{0};
+    for (int x{ 0 };x < test_repeats;x++) {
         std::pair result = test_multiplication();
-        total += result.second;
-        print_matrix(result.first);
+        total_time += result.second;
+        //print_matrix(result.first);
     }
-    std::cout << "Average time of " << repeats << " Matrix multiplications: " << total / repeats << "\n";
-    std::cout << "Total time: " << total.count() / 1000.0 / 1000.0 << "ms";
+    std::cout << "Average time of " << test_repeats << " Matrix multiplications: " << total_time / test_repeats << "\n";
+    std::cout << "Total time: " << total_time.count() / 1000.0 / 1000.0 << "ms";
     //Matrix m = Matrix{ 100, 100, MATRIX_DATA_U };
     //Matrix m2 = Matrix{ 100, 100, MATRIX_DATA };
 

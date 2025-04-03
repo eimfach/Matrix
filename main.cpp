@@ -11,21 +11,21 @@
 
 #include <gsl/util>
 
-void print_column_header(uint32_t columns) {
+void print_column_header(size_t columns) {
     std::cout << std::setfill(' ') << std::setw(7);
-    for (uint32_t x{ 0 }; x < columns; x++) {
+    for (size_t x{ 0 }; x < columns; x++) {
         //int padding = static_cast<int>(x / 10);
         std::cout << x << std::setfill(' ') << std::setw(9);
     }
     std::cout << "\n";
 }
 
-void print_row_number(int n, uint32_t columns) {
+void print_row_number(int n, size_t columns) {
     if (n == 0) {
         std::cout << std::setfill('0') << std::setw(5) << 0;
     }
     else if ((n + 1) % columns == 0) {
-        const uint32_t column{ (n + 1) / columns };
+        const size_t column{ (n + 1) / columns };
         std::cout << "\n" << std::setfill('0') << std::setw(5) << column;
     }
 }
@@ -38,9 +38,9 @@ void print_value(double v) {
 
 void print_matrix(Matrix m) {
     //print_column_header(m.columns);
-    for (uint32_t r{ 0 }; r < m.rows;r++) {
+    for (size_t r{ 0 }; r < m.rows;r++) {
         std::cout << std::setfill('0') << std::setw(5) << r;
-        for (uint32_t c{ 0 };c < m.columns;c++) {
+        for (size_t c{ 0 };c < m.columns;c++) {
             print_value(gsl::at(gsl::at(m.matrix, r), c));
         }
         std::cout << "\n";

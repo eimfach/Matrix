@@ -3,7 +3,19 @@
 #include <cmath>
 
 template <typename T>
-constexpr T constAbs(T t) {
+concept Comparable = requires(T a) {
+    { a < 0 } -> std::convertible_to<bool>;
+    { a > 0 } -> std::convertible_to<bool>;
+};
+
+template <typename Numeric>
+concept Negatable = requires(Numeric a) {
+    { -a } -> std::same_as<Numeric>;
+};
+
+template <typename Numeric>
+requires Comparable<Numeric> && Negatable<Numeric>
+constexpr Numeric constAbs(Numeric t) {
     if (t < 0) {
         return -t;
     }

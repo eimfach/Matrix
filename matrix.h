@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning( disable : 4365 )
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -10,6 +11,7 @@ public:
 	size_t columns{ 0 };
 	size_t rows{ 0 };
 	std::vector<std::vector<double>> matrix;
+	std::vector<double> fields;
 
 	Matrix(size_t r, size_t c) {
 		columns = c;
@@ -25,7 +27,7 @@ public:
 		columns = c;
 		rows = r;
 		matrix.resize(rows);
-
+		fields = data;
 		for (size_t x{ 0 };x < r;x++) {
 			std::vector<double> row;
 			row.resize(r);
@@ -37,7 +39,7 @@ public:
 		}
 	}
 
-	Matrix operator*(const Matrix &matrix2) {
+	Matrix multiply(const Matrix &matrix2) {
 		assert(columns == matrix2.rows);
 		Matrix new_matrix{ rows, matrix2.columns };
 
@@ -53,6 +55,36 @@ public:
 			}
 		}
 
+		return new_matrix;
+	}
+
+	Matrix operator*(const Matrix &matrix2) {
+		using namespace gsl;
+
+		assert(columns == matrix2.rows);
+		std::vector<double> new_fields;
+		size_t row_x{ 0 };
+		size_t span_index{ 0 };
+		double product{ 0.0 };
+
+		for (size_t field{ 0 };field < fields.size();field++) {
+			if (field > 0 && field % columns == 0) {
+				span_index = 0;
+				row_x += 1;
+				new_fields.push_back(product);
+				product = 0.0;
+			}
+
+			// follow the columns in row of the first matrix
+			const double multiplicand{ at(fields, row_x * columns + span_index) };
+			// follow the rows in one column of the second matrix
+			const double multiplicator{ at(matrix2.fields, span_index * columns + row_x) };
+			product += multiplicand * multiplicator;
+			span_index += 1;
+		}
+
+		assert(new_fields.size() == rows * matrix2.columns);
+		Matrix new_matrix{ rows, matrix2.columns, new_fields };
 		return new_matrix;
 	}
 

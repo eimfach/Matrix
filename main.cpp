@@ -11,6 +11,8 @@
 
 #include <gsl/util>
 
+
+
 void print_column_header(size_t columns) {
     std::cout << std::setfill(' ') << std::setw(7);
     for (size_t x{ 0 }; x < columns; x++) {
@@ -83,11 +85,12 @@ std::pair<Matrix, std::chrono::nanoseconds> test_multiplication() {
 
 int main()
 {
-    constexpr int repeats{ 1000 };
+    constexpr int repeats{ 10 };
     std::chrono::nanoseconds total{0};
     for (int x{ 0 };x < repeats;x++) {
         std::pair result = test_multiplication();
         total += result.second;
+        print_matrix(result.first);
     }
     std::cout << "Average time of " << repeats << " Matrix multiplications: " << total / repeats << "\n";
     std::cout << "Total time: " << total.count() / 1000.0 / 1000.0 << "ms";

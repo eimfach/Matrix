@@ -43,7 +43,7 @@ void print_matrix(Matrix m) {
     for (size_t r{ 0 }; r < m.rows;r++) {
         std::cout << std::setfill('0') << std::setw(5) << r;
         for (size_t c{ 0 };c < m.columns;c++) {
-            print_value(gsl::at(gsl::at(m.matrix, r), c));
+            //print_value(gsl::at(m.fields, r*c));
         }
         std::cout << "\n";
     }
@@ -64,7 +64,8 @@ std::pair<Matrix, std::chrono::nanoseconds> test_multiplication() {
     const std::chrono::nanoseconds elapsed = end - start;
 
     std::vector<double> test{ 33.46, 34.57, 33.69, 76.06, 31.68, 41.48, 42.24, 54.28, 42.82 };
-    for (size_t i{ 0 }; i < test.size();i++) assert(approximatelyEqualAbsRel(gsl::at(test, i), gsl::at(m3.fields, i), absEps, relEps));
+    for (gsl::index i{ 0 }; i < gsl::narrow_cast<gsl::index>(test.size());i++) 
+        assert(approximatelyEqualAbsRel(gsl::at(test, i), gsl::at(m3.fields, i), absEps, relEps));
 
     return std::pair{ m3, elapsed };
 }

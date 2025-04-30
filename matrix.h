@@ -39,7 +39,7 @@ public:
 			if (field > 0 && field % columns == 0) {
 				span_index = 0;
 
-				if (col_y < matrix_y.columns - 1) {
+				if (col_y < columns - 1) {
 					field -= columns;
 					col_y += 1;
 				}
@@ -49,7 +49,8 @@ public:
 				}
 			}
 
-			if (field == fields.size()) break;
+			if (field == fields.size()) 
+				break;
 
 			// follow the columns in row of the first matrix
 			const double multiplicand{ at(fields, gsl::narrow_cast<gsl::index>(row_x * columns + span_index)) };
@@ -57,6 +58,16 @@ public:
 			const double multiplicator{ at(matrix_y.fields,  gsl::narrow_cast<gsl::index>(span_index * columns + col_y)) };
 			at(new_matrix.fields, gsl::narrow_cast<gsl::index>(row_x * columns + col_y)) += multiplicand * multiplicator;
 			span_index += 1;
+		}
+
+		return new_matrix;
+	}
+
+	Matrix operator*(double multiplier) {
+		using namespace gsl;
+		Matrix new_matrix{ rows, columns };
+		for (index field{ 0 };field < narrow_cast<index>(fields.size());field++) {
+			at(new_matrix.fields, field) = at(fields, field) * multiplier;
 		}
 
 		return new_matrix;

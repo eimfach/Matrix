@@ -63,6 +63,7 @@ std::pair<Matrix, std::chrono::nanoseconds> test_multiplication() {
     const std::chrono::time_point end = std::chrono::high_resolution_clock::now();
     const std::chrono::nanoseconds elapsed = end - start;
 
+    //TODO: Tests for uneven sizes
     std::vector<double> test{ 33.46, 34.57, 33.69, 76.06, 31.68, 41.48, 42.24, 54.28, 42.82 };
     for (gsl::index i{ 0 }; i < gsl::narrow_cast<gsl::index>(test.size());i++) 
         assert(approximatelyEqualAbsRel(gsl::at(test, i), gsl::at(m3.fields, i), absEps, relEps));
@@ -70,6 +71,22 @@ std::pair<Matrix, std::chrono::nanoseconds> test_multiplication() {
     return std::pair{ m3, elapsed };
 }
 
+std::pair<Matrix, std::chrono::nanoseconds> test_scalar_multiplication() {
+    Matrix m{ 3, 3, std::vector<double>{2.3, 4.0, 3.5, 5.1, 0.8, 9.4, 1.7, 6.2, 7.0} };
+    constexpr double scalar{ 2.0 };
+
+    const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+    Matrix mr{ m * scalar };
+    const std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+    const std::chrono::nanoseconds elapsed = end - start;
+
+    std::vector<double> test{ 4.6, 8.0, 7.0, 10.2, 1.6, 18.8, 3.4, 12.4, 14.0 };
+    assert(test.size() == mr.size());
+    for (gsl::index i{ 0 }; i < gsl::narrow_cast<gsl::index>(test.size()); i++) {
+        assert(approximatelyEqualAbsRel(gsl::at(mr.fields, i), gsl::at(test, i), absEps, relEps));
+    }
+    return std::pair{ mr, elapsed };
+}
 
 int main()
 {
@@ -81,7 +98,16 @@ int main()
         //print_matrix(result.first);
     }
     std::cout << "Average time of " << test_repeats << " Matrix multiplications: " << total_time / test_repeats << "\n";
-    std::cout << "Total time: " << total_time.count() / 1000.0 / 1000.0 << "ms";
+    std::cout << "Total time: " << total_time.count() / 1000.0 / 1000.0 << "ms" << "\n";
+
+    total_time = std::chrono::nanoseconds{ 0 };
+    for (int x{ 0 };x < test_repeats;x++) {
+        std::pair result = test_scalar_multiplication();
+        total_time += result.second;
+        //print_matrix(result.first);
+    }
+    std::cout << "Average time of " << test_repeats << " Scalar Matrix multiplications: " << total_time / test_repeats << "\n";
+    std::cout << "Total time: " << total_time.count() / 1000.0 / 1000.0 << "ms" << "\n";
     //Matrix m = Matrix{ 100, 100, MATRIX_DATA_U };
     //Matrix m2 = Matrix{ 100, 100, MATRIX_DATA };
 
